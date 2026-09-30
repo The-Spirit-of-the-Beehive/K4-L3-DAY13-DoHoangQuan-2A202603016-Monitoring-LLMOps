@@ -4,11 +4,16 @@ import hashlib
 import re
 
 PII_PATTERNS: dict[str, str] = {
-    "email": r"[\w\.-]+@[\w\.-]+\.\w+",
-    "phone_vn": r"(?<!\d)(?:\+84|0)(?:[ .-]?\d){9}(?!\d)",
-    "cccd": r"\b\d{12}\b",
-    "credit_card": r"\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b",
-    # TODO: Add more patterns (e.g., Passport, Vietnamese address keywords)
+    # Email: hỗ trợ tên miền phụ, dấu +, dấu chấm
+    "email": r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+",
+    # Thẻ tín dụng/ghi nợ: 16 số (4-4-4-4) hoặc 15 số (Amex 4-6-5), có hoặc không có dấu gạch/khoảng trắng
+    "credit_card": r"(?<!\d)(?:\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}|\d{4}[- ]?\d{6}[- ]?\d{5})(?!\d)",
+    # CCCD: 12 chữ số viết liền hoặc chia cụm 3-3-3-3 hoặc 4-4-4
+    "cccd": r"(?<!\d)(?:\d{12}|\d{3}[- ]\d{3}[- ]\d{3}[- ]\d{3}|\d{4}[- ]\d{4}[- ]\d{4})(?!\d)",
+    # SĐT Việt Nam: đầu 0 hoặc +84 hoặc (+84) kèm 9 chữ số di động
+    "phone_vn": r"(?<!\d)(?:\+84|0|\(\+84\))(?:[ .-]?\d){9}(?!\d)",
+    # Bổ sung Hộ chiếu VN (Passport): 1 chữ cái in hoa (B, C, G, K, P,...) theo sau là 7-8 chữ số
+    "passport": r"(?<![A-Za-z0-9])[A-Z]\d{7,8}(?![A-Za-z0-9])",
 }
 
 
